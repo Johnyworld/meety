@@ -10,7 +10,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "agora-rtc-react": "^2.1.0",
     "agora-rtc-sdk-ng": "^4.20.0",
     "global": "^4.4.0",
     "react": "^18.2.0",
