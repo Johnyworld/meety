@@ -10,9 +10,14 @@ export const RemoteUserVideo = ({ user }: Props) => {
 
   useEffect(() => {
     if (divRef.current) {
-      user.videoTrack?.play(divRef.current);
+      if (user.hasVideo) {
+        user.videoTrack?.play(divRef.current);
+      }
+      if (user.hasAudio) {
+        user.audioTrack?.play();
+      }
     }
-  }, [user.videoTrack]);
+  }, [user.audioTrack, user.hasAudio, user.hasVideo, user.videoTrack]);
 
   return <div ref={divRef} className='h-20 w-32' />;
 };
