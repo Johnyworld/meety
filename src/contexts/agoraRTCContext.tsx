@@ -33,7 +33,9 @@ interface AgoraRTCContextType {
   remoteUsers: IAgoraRTCRemoteUser[];
   localAudioTrack: ILocalAudioTrack | null;
   localVideoTrack: ILocalVideoTrack | null;
+  localScreenTrack: ILocalVideoTrack | null;
   publishStream: () => void;
+  toggleScreen: () => void;
 }
 
 export const AgoraRTCContext = createContext<AgoraRTCContextType>({} as AgoraRTCContextType);
@@ -44,6 +46,7 @@ export const AgoraRTCContextProvider = ({ children }: Props) => {
   const [isJoined, setIsJoined] = useState(false);
   const [remoteUsers, setRemoteUsers] = useState<IAgoraRTCRemoteUser[]>([]);
   const [localAudioTrack, localVideoTrack] = useLocalTracks();
+  const [localScreenTrack, setLocalScreenTrack] = useState<ILocalVideoTrack | null>(null);
 
   const joinStream = useCallback(async () => {
     await client.join(APP_ID, roomId, token, uid);
@@ -55,6 +58,22 @@ export const AgoraRTCContextProvider = ({ children }: Props) => {
       client.publish([localAudioTrack, localVideoTrack]);
     }
   }, [client, localAudioTrack, localVideoTrack]);
+
+  const toggleScreen = useCallback(async () => {
+    if (!localAudioTrack || !localVideoTrack) {
+      return;
+    }
+    const localScreenTracks = await AgoraRTC.createScreenVideoTrack({});
+    if (!localScreenTrack) {
+      setLocalScreenTrack(Array.isArray(localScreenTracks) ? localScreenTracks[0] : localScreenTracks);
+      await client.unpublish([localVideoTrack]);
+      await client.publish(localScreenTracks);
+    } else {
+      setLocalScreenTrack(null);
+      await client.unpublish(localScreenTracks);
+      await client.publish([localVideoTrack]);
+    }
+  }, [client, localAudioTrack, localScreenTrack, localVideoTrack]);
 
   const handleUserPublished: AgoraClientEventListener = useCallback(
     async (user, mediaType) => {
@@ -95,7 +114,17 @@ export const AgoraRTCContextProvider = ({ children }: Props) => {
   }
 
   return (
-    <AgoraRTCContext.Provider value={{ client, remoteUsers, publishStream, localAudioTrack, localVideoTrack }}>
+    <AgoraRTCContext.Provider
+      value={{
+        client,
+        remoteUsers,
+        publishStream,
+        localAudioTrack,
+        localVideoTrack,
+        localScreenTrack,
+        toggleScreen,
+      }}
+    >
       {children}
     </AgoraRTCContext.Provider>
   );

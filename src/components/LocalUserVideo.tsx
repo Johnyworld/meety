@@ -9,7 +9,8 @@ export const LocalUserVideo = ({ localVideoTrack }: Props) => {
   const divRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (divRef.current?.children.length === 0) {
+    if (divRef.current) {
+      divRef.current.innerHTML = '';
       localVideoTrack.play(divRef.current, { fit: 'cover' });
     }
   }, [localVideoTrack]);

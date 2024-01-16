@@ -4,7 +4,7 @@ import { RemoteUserVideo } from './components/RemoteUserVideo';
 import { useAgoraRTCContext } from './hooks/useAgoraRTCContext';
 
 function App() {
-  const { localVideoTrack, remoteUsers, publishStream } = useAgoraRTCContext();
+  const { localVideoTrack, remoteUsers, publishStream, localScreenTrack, toggleScreen } = useAgoraRTCContext();
 
   useEffect(() => {
     publishStream();
@@ -13,10 +13,11 @@ function App() {
   return (
     <main>
       <h1 className='text-3xl font-bold underline'>Hello world!</h1>
-      {localVideoTrack && <LocalUserVideo localVideoTrack={localVideoTrack} />}
+      {localVideoTrack && <LocalUserVideo localVideoTrack={localScreenTrack ? localScreenTrack : localVideoTrack} />}
       {remoteUsers.map(user => (
         <RemoteUserVideo key={user.uid} user={user} />
       ))}
+      <button onClick={toggleScreen}>toggleScreen</button>
     </main>
   );
 }
