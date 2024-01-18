@@ -7,6 +7,7 @@ import AgoraRTC, {
 } from 'agora-rtc-sdk-ng';
 import { ReactNode, createContext, useCallback, useEffect, useMemo, useState } from 'react';
 import { useLocalTracks } from '../hooks/useLocalTracks';
+import { userStore } from '../stores/userStore';
 
 const APP_ID = import.meta.env.VITE_AGORA_APP_ID;
 const roomId = 'main';
@@ -17,12 +18,6 @@ type AgoraClientEventListener = (
   mediaType: 'audio' | 'video' | 'datachannel',
   config?: IDataChannelConfig | undefined
 ) => void;
-
-let uid = sessionStorage.getItem('uid');
-if (!uid) {
-  uid = String(Math.floor(Math.random() * 10000));
-  sessionStorage.setItem('uid', uid);
-}
 
 interface Props {
   children: ReactNode;
@@ -42,6 +37,7 @@ export const AgoraRTCContext = createContext<AgoraRTCContextType>({} as AgoraRTC
 
 export const AgoraRTCContextProvider = ({ children }: Props) => {
   const client = useMemo(() => AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' }), []);
+  const uid = userStore(state => state.uid);
 
   const [isJoined, setIsJoined] = useState(false);
   const [remoteUsers, setRemoteUsers] = useState<IAgoraRTCRemoteUser[]>([]);
@@ -51,7 +47,7 @@ export const AgoraRTCContextProvider = ({ children }: Props) => {
   const joinStream = useCallback(async () => {
     await client.join(APP_ID, roomId, token, uid);
     setIsJoined(true);
-  }, [client]);
+  }, [client, uid]);
 
   const publishStream = useCallback(async () => {
     if (localAudioTrack && localVideoTrack) {
