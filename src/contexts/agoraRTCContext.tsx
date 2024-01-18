@@ -63,14 +63,14 @@ export const AgoraRTCContextProvider = ({ children }: Props) => {
     if (!localAudioTrack || !localVideoTrack) {
       return;
     }
-    const localScreenTracks = await AgoraRTC.createScreenVideoTrack({});
     if (!localScreenTrack) {
+      const localScreenTracks = await AgoraRTC.createScreenVideoTrack({});
       setLocalScreenTrack(Array.isArray(localScreenTracks) ? localScreenTracks[0] : localScreenTracks);
       await client.unpublish([localVideoTrack]);
       await client.publish(localScreenTracks);
     } else {
       setLocalScreenTrack(null);
-      await client.unpublish(localScreenTracks);
+      await client.unpublish(localScreenTrack);
       await client.publish([localVideoTrack]);
     }
   }, [client, localAudioTrack, localScreenTrack, localVideoTrack]);
