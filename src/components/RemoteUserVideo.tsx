@@ -10,12 +10,7 @@ export const RemoteUserVideo = ({ user }: Props) => {
 
   useEffect(() => {
     if (divRef.current) {
-      if (user.hasVideo) {
-        user.videoTrack?.play(divRef.current);
-      }
-      if (user.hasAudio) {
-        user.audioTrack?.play();
-      }
+      user.videoTrack?.play(divRef.current);
     }
   }, [user.audioTrack, user.hasAudio, user.hasVideo, user.videoTrack]);
 

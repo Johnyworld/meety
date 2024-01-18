@@ -79,18 +79,26 @@ export const AgoraRTCContextProvider = ({ children }: Props) => {
     async (user, mediaType) => {
       console.log('=== USER PUBLISHED');
       await client.subscribe(user, mediaType);
-      setRemoteUsers([...remoteUsers, user]);
+      if (mediaType === 'video') {
+        setRemoteUsers(state => [...state, user]);
+      }
+      if (mediaType === 'audio') {
+        user.audioTrack?.play();
+      }
     },
-    [client, remoteUsers]
+    [client]
   );
 
   const handleUserUnpublished: AgoraClientEventListener = useCallback(
     async (user, mediaType) => {
       console.log('=== USER UN-PUBLISHED');
+      if (mediaType === 'audio') {
+        user.audioTrack?.stop();
+      }
       await client.unsubscribe(user, mediaType);
-      setRemoteUsers(remoteUsers.filter(remoteUser => remoteUser.uid !== user.uid));
+      setRemoteUsers(state => state.filter(remoteUser => remoteUser.uid !== user.uid));
     },
-    [client, remoteUsers]
+    [client]
   );
 
   useEffect(() => {
