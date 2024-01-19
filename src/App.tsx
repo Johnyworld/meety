@@ -42,12 +42,19 @@ const Members = () => {
 
 const Messages = () => {
   const { messages } = useAgoraRTMContext();
-  return messages.map((message, i) => (
-    <p key={i}>
-      {/* TODO: key를 적당한 아이디값으로 변경 */}
-      <strong>{message.displayName}</strong>: {message.message}
-    </p>
-  ));
+  return messages.map((message, i) =>
+    message.type === 'chat' ? (
+      <p key={i}>
+        {/* TODO: key를 적당한 아이디값으로 변경 */}
+        <strong>{message.displayName}</strong>: {message.message}
+      </p>
+    ) : (
+      <p key={i}>
+        {/* TODO: key를 적당한 아이디값으로 변경 */}
+        <strong>🤖 Bot</strong>: {message.message}
+      </p>
+    )
+  );
 };
 
 const MessageInput = () => {
