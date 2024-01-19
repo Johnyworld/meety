@@ -6,6 +6,11 @@ interface Props {
   children: ReactNode;
 }
 
+interface ChatMember {
+  uid: string;
+  displayName: string;
+}
+
 interface ChatMessage {
   uid: string;
   displayName: string;
@@ -13,6 +18,7 @@ interface ChatMessage {
 }
 
 export interface AgoraRTMContextType {
+  members: ChatMember[];
   messages: ChatMessage[];
   sendMessage: (message: string) => void;
 }
@@ -52,7 +58,22 @@ const AgoraRTMController = ({
   children: ReactNode;
 }) => {
   const { uid, displayName, setDisplayName } = userStore();
+  const [members, setMembers] = useState<ChatMember[]>([]);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+
+  const handleMemberJoined = useCallback(
+    async (memberId: string) => {
+      console.log('===== Member has joined', memberId);
+      const { name } = await client.getUserAttributesByKeys(memberId, ['name']);
+      setMembers(state => [...state, { uid: memberId, displayName: name }]);
+    },
+    [client]
+  );
+
+  const handleMemberLeft = useCallback(async (memberId: string) => {
+    console.log('===== Member has left', memberId);
+    setMembers(state => state.filter(member => member.uid !== memberId));
+  }, []);
 
   const handleChannelMessage = useCallback((messageData: RtmMessage) => {
     const newMessage: ChatMessage = JSON.parse(messageData.text ?? '');
@@ -64,7 +85,14 @@ const AgoraRTMController = ({
       await client.login({ uid });
       await channel.join();
       await client.addOrUpdateLocalUserAttributes({ name: uid }); // TODO: uid 대신 displayName 을 넣어야 함
-      setDisplayName(uid);
+      const memberIds = await channel.getMembers();
+      const members = await Promise.all(
+        memberIds.map(async memberId => {
+          const { name: displayName } = await client.getUserAttributesByKeys(memberId, ['name']);
+          return { uid: memberId, displayName };
+        })
+      );
+      setMembers(members);
       channel.on('MemberJoined', handleMemberJoined);
       channel.on('MemberLeft', handleMemberLeft);
       channel.on('ChannelMessage', handleChannelMessage);
@@ -82,7 +110,7 @@ const AgoraRTMController = ({
     return () => {
       window.removeEventListener('beforeunload', leaveChannel);
     };
-  }, [channel, client, handleChannelMessage, setDisplayName, uid]);
+  }, [channel, client, handleChannelMessage, handleMemberJoined, handleMemberLeft, setDisplayName, uid]);
 
   const sendMessage = useCallback(
     async (message: string) => {
@@ -93,13 +121,5 @@ const AgoraRTMController = ({
     [channel, displayName, uid]
   );
 
-  return <AgoraRTMContext.Provider value={{ messages, sendMessage }}>{children}</AgoraRTMContext.Provider>;
-};
-
-const handleMemberJoined = async (memberId: string) => {
-  console.log('=== A new member has joined the room: ', memberId);
-};
-
-const handleMemberLeft = async (memberId: string) => {
-  console.log('=== A member has left the room: ', memberId);
+  return <AgoraRTMContext.Provider value={{ members, messages, sendMessage }}>{children}</AgoraRTMContext.Provider>;
 };

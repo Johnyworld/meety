@@ -19,16 +19,32 @@ function App() {
         <RemoteUserVideo key={user.uid} user={user} />
       ))}
       <button onClick={toggleScreen}>toggleScreen</button>
+      <hr />
+      <Members />
+      <hr />
       <Messages />
+      <hr />
       <MessageInput />
     </main>
   );
 }
 
+const Members = () => {
+  const { members } = useAgoraRTMContext();
+  return (
+    <ul>
+      {members.map(member => (
+        <li key={member.uid}>{member.displayName}</li>
+      ))}
+    </ul>
+  );
+};
+
 const Messages = () => {
   const { messages } = useAgoraRTMContext();
-  return messages.map(message => (
-    <p>
+  return messages.map((message, i) => (
+    <p key={i}>
+      {/* TODO: key를 적당한 아이디값으로 변경 */}
       <strong>{message.displayName}</strong>: {message.message}
     </p>
   ));
