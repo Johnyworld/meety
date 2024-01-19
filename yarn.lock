@@ -588,6 +588,11 @@ agora-rte-extension@^1.2.4:
   resolved "https://registry.yarnpkg.com/agora-rte-extension/-/agora-rte-extension-1.2.4.tgz#6ba1742b16191ea9eba69376b067d4b2e0fe9d34"
   integrity sha512-0ovZz1lbe30QraG1cU+ji7EnQ8aUu+Hf3F+a8xPml3wPOyUQEK6CTdxV9kMecr9t+fIDrGeW7wgJTsM1DQE7Nw==
 
+agora-rtm-sdk@^1.5.1:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/agora-rtm-sdk/-/agora-rtm-sdk-1.6.0.tgz#99b0e85d93dfce5ff01c878ecfb97d122cfe70c9"
+  integrity sha512-A0KmHxIHwIb5r1cWEJXMQX8UkCb07Xs5JLX6Hy6PsRWcvxWu66GPqdTx0rP4TmoQ4pEN2LJYGatjxWD79ZZ6Pw==
+
 ajv@^6.12.4:
   version "6.12.6"
   resolved "https://registry.yarnpkg.com/ajv/-/ajv-6.12.6.tgz#baf5a62e802b07d977034586f8c3baf5adf26df4"
