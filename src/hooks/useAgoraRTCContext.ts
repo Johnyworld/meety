@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { AgoraRTCContext } from '../contexts/AgoraRTCContext';
+import { AgoraRTCContext } from '../contexts/agoraRTCContext';
 
 export const useAgoraRTCContext = () => {
   const context = useContext(AgoraRTCContext);
