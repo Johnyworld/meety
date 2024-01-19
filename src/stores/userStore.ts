@@ -2,7 +2,7 @@ import { create } from 'zustand';
 
 interface UserState {
   uid: string;
-  displayName: string | null;
+  displayName: string;
   setDisplayName: (name: string) => void;
 }
 
@@ -18,6 +18,6 @@ const getUID = (): string => {
 
 export const userStore = create<UserState>()(set => ({
   uid: getUID(),
-  displayName: null,
+  displayName: '',
   setDisplayName: newValue => set(() => ({ displayName: newValue })),
 }));
