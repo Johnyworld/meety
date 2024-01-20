@@ -1,43 +1,17 @@
-import AgoraRTC, {
-  IAgoraRTCClient,
-  IAgoraRTCRemoteUser,
-  IDataChannelConfig,
-  ILocalAudioTrack,
-  ILocalVideoTrack,
-} from 'agora-rtc-sdk-ng';
-import { ReactNode, createContext, useCallback, useEffect, useMemo, useState } from 'react';
-import { useLocalTracks } from '../hooks/useLocalTracks';
-import { userStore } from '../stores/userStore';
+import AgoraRTC, { IAgoraRTCRemoteUser, ILocalVideoTrack } from 'agora-rtc-sdk-ng';
+import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
+import { useLocalTracks } from '../../../hooks/useLocalTracks';
+import { userStore } from '../../../stores/userStore';
+import { AgoraClientEventListener } from '../types';
+import { AgoraRTCContext } from './context';
 
 const APP_ID = import.meta.env.VITE_AGORA_APP_ID;
 const roomId = 'main';
 const token = null;
 
-type AgoraClientEventListener = (
-  user: IAgoraRTCRemoteUser,
-  mediaType: 'audio' | 'video' | 'datachannel',
-  config?: IDataChannelConfig | undefined
-) => void;
-
 interface Props {
   children: ReactNode;
 }
-
-interface AgoraRTCContextType {
-  client: IAgoraRTCClient;
-  remoteUsers: IAgoraRTCRemoteUser[];
-  localAudioTrack: ILocalAudioTrack | null;
-  localVideoTrack: ILocalVideoTrack | null;
-  localScreenTrack: ILocalVideoTrack | null;
-  micMuted: boolean;
-  cameraMuted: boolean;
-  publishStream: () => void;
-  toggleScreen: () => void;
-  toggleMuteMic: () => void;
-  toggleMuteCamera: () => void;
-}
-
-export const AgoraRTCContext = createContext<AgoraRTCContextType>({} as AgoraRTCContextType);
 
 export const AgoraRTCContextProvider = ({ children }: Props) => {
   const client = useMemo(() => AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' }), []);

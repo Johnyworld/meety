@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
-import { LocalUserVideo } from './components/LocalUserVideo';
-import { RemoteUserVideo } from './components/RemoteUserVideo';
-import { useAgoraRTCContext } from './hooks/useAgoraRTCContext';
 import { useAgoraRTMContext } from './hooks/useAgoraRTMContext';
+import { useAgoraRTCContext } from './components/AgoraRTC/context/useContext';
+import { AgoraRTC } from './components/AgoraRTC';
 
 function App() {
   const {
@@ -25,9 +24,11 @@ function App() {
   return (
     <main>
       <h1 className='text-3xl font-bold underline'>Hello world!</h1>
-      {localVideoTrack && <LocalUserVideo localVideoTrack={localScreenTrack ? localScreenTrack : localVideoTrack} />}
+      {localVideoTrack && (
+        <AgoraRTC.LocalUserVideo localVideoTrack={localScreenTrack ? localScreenTrack : localVideoTrack} />
+      )}
       {remoteUsers.map(user => (
-        <RemoteUserVideo key={user.uid} user={user} />
+        <AgoraRTC.RemoteUserVideo key={user.uid} user={user} />
       ))}
       <button onClick={toggleScreen}>toggleScreen</button>
       {` | `}
