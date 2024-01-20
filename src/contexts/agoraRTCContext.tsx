@@ -29,8 +29,12 @@ interface AgoraRTCContextType {
   localAudioTrack: ILocalAudioTrack | null;
   localVideoTrack: ILocalVideoTrack | null;
   localScreenTrack: ILocalVideoTrack | null;
+  micMuted: boolean;
+  cameraMuted: boolean;
   publishStream: () => void;
   toggleScreen: () => void;
+  toggleMuteMic: () => void;
+  toggleMuteCamera: () => void;
 }
 
 export const AgoraRTCContext = createContext<AgoraRTCContextType>({} as AgoraRTCContextType);
@@ -43,6 +47,9 @@ export const AgoraRTCContextProvider = ({ children }: Props) => {
   const [remoteUsers, setRemoteUsers] = useState<IAgoraRTCRemoteUser[]>([]);
   const [localAudioTrack, localVideoTrack] = useLocalTracks();
   const [localScreenTrack, setLocalScreenTrack] = useState<ILocalVideoTrack | null>(null);
+
+  const [micMuted, setMicMuted] = useState<boolean>(false);
+  const [cameraMuted, setCameraMuted] = useState<boolean>(false);
 
   const joinStream = useCallback(async () => {
     await client.join(APP_ID, roomId, token, uid);
@@ -71,6 +78,32 @@ export const AgoraRTCContextProvider = ({ children }: Props) => {
     }
   }, [client, localAudioTrack, localScreenTrack, localVideoTrack]);
 
+  const toggleMuteMic = useCallback(async () => {
+    if (localAudioTrack) {
+      if (micMuted) {
+        setMicMuted(false);
+        await client.publish([localAudioTrack]);
+      } else {
+        setMicMuted(true);
+        await client.unpublish([localAudioTrack]);
+      }
+    }
+  }, [client, micMuted, localAudioTrack]);
+
+  const toggleMuteCamera = useCallback(async () => {
+    if (localVideoTrack) {
+      if (cameraMuted) {
+        setCameraMuted(false);
+        localVideoTrack.setMuted(false);
+        await client.publish([localVideoTrack]);
+      } else {
+        setCameraMuted(true);
+        localVideoTrack.setMuted(true);
+        await client.unpublish([localVideoTrack]);
+      }
+    }
+  }, [cameraMuted, client, localVideoTrack]);
+
   const handleUserPublished: AgoraClientEventListener = useCallback(
     async (user, mediaType) => {
       console.log('=== USER PUBLISHED');
@@ -88,11 +121,13 @@ export const AgoraRTCContextProvider = ({ children }: Props) => {
   const handleUserUnpublished: AgoraClientEventListener = useCallback(
     async (user, mediaType) => {
       console.log('=== USER UN-PUBLISHED');
+      await client.unsubscribe(user, mediaType);
+      if (mediaType === 'video') {
+        setRemoteUsers(state => state.filter(remoteUser => remoteUser.uid !== user.uid));
+      }
       if (mediaType === 'audio') {
         user.audioTrack?.stop();
       }
-      await client.unsubscribe(user, mediaType);
-      setRemoteUsers(state => state.filter(remoteUser => remoteUser.uid !== user.uid));
     },
     [client]
   );
@@ -126,7 +161,11 @@ export const AgoraRTCContextProvider = ({ children }: Props) => {
         localAudioTrack,
         localVideoTrack,
         localScreenTrack,
+        micMuted,
+        cameraMuted,
         toggleScreen,
+        toggleMuteMic,
+        toggleMuteCamera,
       }}
     >
       {children}

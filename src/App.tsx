@@ -5,7 +5,18 @@ import { useAgoraRTCContext } from './hooks/useAgoraRTCContext';
 import { useAgoraRTMContext } from './hooks/useAgoraRTMContext';
 
 function App() {
-  const { localVideoTrack, remoteUsers, publishStream, localScreenTrack, toggleScreen } = useAgoraRTCContext();
+  const {
+    localVideoTrack,
+    localAudioTrack,
+    remoteUsers,
+    publishStream,
+    localScreenTrack,
+    micMuted,
+    cameraMuted,
+    toggleScreen,
+    toggleMuteMic,
+    toggleMuteCamera,
+  } = useAgoraRTCContext();
 
   useEffect(() => {
     publishStream();
@@ -19,6 +30,10 @@ function App() {
         <RemoteUserVideo key={user.uid} user={user} />
       ))}
       <button onClick={toggleScreen}>toggleScreen</button>
+      {` | `}
+      {localAudioTrack && <button onClick={toggleMuteMic}>toggleMic: {micMuted ? '❌' : '🎙'}</button>}
+      {` | `}
+      {localVideoTrack && <button onClick={toggleMuteCamera}>toggleCamera: {cameraMuted ? '❌' : '🎥'}</button>}
       <hr />
       <Members />
       <hr />
