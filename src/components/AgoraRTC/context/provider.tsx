@@ -22,6 +22,7 @@ export const AgoraRTCContextProvider = ({ children }: Props) => {
   const [localAudioTrack, localVideoTrack] = useLocalTracks();
   const [localScreenTrack, setLocalScreenTrack] = useState<ILocalVideoTrack | null>(null);
 
+  const isScreenSharing = localScreenTrack !== null;
   const [micMuted, setMicMuted] = useState<boolean>(false);
   const [cameraMuted, setCameraMuted] = useState<boolean>(false);
 
@@ -135,6 +136,7 @@ export const AgoraRTCContextProvider = ({ children }: Props) => {
         localAudioTrack,
         localVideoTrack,
         localScreenTrack,
+        isScreenSharing,
         micMuted,
         cameraMuted,
         toggleScreen,

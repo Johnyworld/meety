@@ -12,6 +12,7 @@ export interface AgoraRTCContextType {
   localAudioTrack: ILocalAudioTrack | null;
   localVideoTrack: ILocalVideoTrack | null;
   localScreenTrack: ILocalVideoTrack | null;
+  isScreenSharing: boolean;
   micMuted: boolean;
   cameraMuted: boolean;
   publishStream: () => void;

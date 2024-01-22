@@ -4,18 +4,7 @@ import { useAgoraRTCContext } from './components/AgoraRTC/context/useContext';
 import { AgoraRTC } from './components/AgoraRTC';
 
 function App() {
-  const {
-    localVideoTrack,
-    localAudioTrack,
-    remoteUsers,
-    publishStream,
-    localScreenTrack,
-    micMuted,
-    cameraMuted,
-    toggleScreen,
-    toggleMuteMic,
-    toggleMuteCamera,
-  } = useAgoraRTCContext();
+  const { publishStream } = useAgoraRTCContext();
 
   useEffect(() => {
     publishStream();
@@ -24,17 +13,13 @@ function App() {
   return (
     <main>
       <h1 className='text-3xl font-bold underline'>Hello world!</h1>
-      {localVideoTrack && (
-        <AgoraRTC.LocalUserVideo localVideoTrack={localScreenTrack ? localScreenTrack : localVideoTrack} />
-      )}
-      {remoteUsers.map(user => (
-        <AgoraRTC.RemoteUserVideo key={user.uid} user={user} />
-      ))}
-      <button onClick={toggleScreen}>toggleScreen</button>
+      <AgoraRTC.LocalUserVideo />
+      <AgoraRTC.RemoteUsersVideos />
+      <AgoraRTC.ToggleScreen />
       {` | `}
-      {localAudioTrack && <button onClick={toggleMuteMic}>toggleMic: {micMuted ? '❌' : '🎙'}</button>}
+      <AgoraRTC.ToggleMic />
       {` | `}
-      {localVideoTrack && <button onClick={toggleMuteCamera}>toggleCamera: {cameraMuted ? '❌' : '🎥'}</button>}
+      <AgoraRTC.ToggleCamera />
       <hr />
       <Members />
       <hr />
